@@ -28,7 +28,7 @@ bool setupBoard(void) {
 
 void setup(void) {
 
-  _wait_for_serial(115200);
+  _wait_for_serial(__SERIAL_DEBUG_BAUD_RATE__);
 
   if (!setupBoard()) { _wait_forever; }
 }

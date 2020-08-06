@@ -11,15 +11,11 @@
 #include "../../../NeoCLUE.h"
 #include "../../Board.h"
 
+#include "../../../view/View.h"
+
 class Lcd {
-public:
-  enum class View { None, Home, Scan };
-
 private:
-  View _view;
-  bool _viewHasAppeared;
-
-  void createView(View view);
+  View *_view;
 
 protected:
   Adafruit_ST7789    *_ips;
@@ -31,7 +27,7 @@ public:
   bool begin(void);
   void update(void);
 
-  void setView(View view);
+  void show(View::Kind kind);
 };
 
 #endif // __LCD_H__

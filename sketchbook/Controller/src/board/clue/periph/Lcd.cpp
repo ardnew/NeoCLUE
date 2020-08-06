@@ -1,9 +1,11 @@
 #include "Lcd.h"
 #include "Periph.h"
 
+#include "../../../view/home/Home.h"
+#include "../../../view/scan/Scan.h"
+
 Lcd::Lcd(void):
-  _view(View::None),
-  _viewHasAppeared(false),
+  _view(nullptr),
   _ips(new Adafruit_ST7789(
     &__IPS_LCD_SPI__,
     __PIN_IPS_LCD_CS__,
@@ -21,40 +23,34 @@ bool Lcd::begin(void) {
   _ips->init(__IPS_LCD_WIDTH__, __IPS_LCD_HEIGHT__);
   _ips->setRotation(__IPS_LCD_ROTATE__);
   _enable_backlight(true);
-  setView(View::Home);
   return LVGL_OK == _glue->begin(_ips, true);
 }
 
 void Lcd::update(void) {
   lv_task_handler();
-  if (!_viewHasAppeared) {
-    createView(_view);
-    _viewHasAppeared = true;
+  if (nullptr != _view) {
+    _view->update();
   }
 }
 
-void Lcd::setView(View view) {
-  if (_view != view) {
-    // requested a view other than the currently displayed view.
-    // reset the appearance flag so it gets created on next screen update.
-    _view = view;
-    _viewHasAppeared = false;
-  }
-}
-
-void Lcd::createView(View view) {
-  switch (view) {
-    case View::None: {
-      break;
+void Lcd::show(View::Kind kind) {
+  if (nullptr == _view || _view->kind() != kind) {
+    if (nullptr != _view) {
+      delete _view;
     }
-    case View::Home: {
-      lv_obj_t *label = lv_label_create(lv_scr_act(), NULL);
-      lv_label_set_text(label, "---OK2---");
-      lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, 0);
-      break;
-    }
-    case View::Scan: {
-      break;
+    switch (kind) {
+      case View::Kind::Home: {
+        _view = new Home();
+        break;
+      }
+      case View::Kind::Scan: {
+        _view = new Scan();
+        break;
+      }
+      case View::Kind::None:
+      default: {
+        break;
+      }
     }
   }
 }

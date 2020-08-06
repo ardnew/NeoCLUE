@@ -20,7 +20,7 @@
 #define _wait_forever \
   nowhere: delay(__CPU_HALT_DELAY__); goto nowhere;
 
-#define __BLUETOOTH_NAME__              "NeoCLUE-Controller"
+#define __BLUETOOTH_NAME__              "NeoCLUE-Driver"
 
 // ----------------------------------------------------------------- TYPEDEFS --
 

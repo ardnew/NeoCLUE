@@ -14,6 +14,8 @@ Board::InitError Clue::begin(void) {
   if ((nullptr == _ble) || !(_ble->begin()))
     { return Board::InitError::BLE; }
 
+  _lcd->show(View::Kind::Home);
+
   if (_ble->scanForDevices(true)) {
     _cinfof("%s", "starting scan");
   }
