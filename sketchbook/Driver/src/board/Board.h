@@ -9,7 +9,7 @@ protected:
   }
 
 public:
-  enum class InitError { None, BLE };
+  enum class InitError { None, LED, BLE };
 
   virtual InitError begin(void) = 0;
   virtual void update(void) = 0;

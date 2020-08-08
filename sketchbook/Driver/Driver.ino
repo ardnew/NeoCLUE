@@ -11,6 +11,10 @@ bool setupBoard(void) {
       _cstamp;
       return true;
     }
+    case Board::InitError::LED: {
+      _cerrf("%s", "failed to initialize LED strip interface");
+      return false;
+    }
     case Board::InitError::BLE: {
       _cerrf("%s", "failed to initialize Bluetooth (LE) module");
       return false;
@@ -24,7 +28,7 @@ bool setupBoard(void) {
 
 void setup(void) {
 
-  _wait_for_serial(__SERIAL_DEBUG_BAUD_RATE__);
+  _wait_for_serial(__SERIAL_DEBUG_BAUD_RATE__, __SERIAL_BOOT_TIMEOUT__);
 
   if (!setupBoard()) { _wait_forever; }
 }

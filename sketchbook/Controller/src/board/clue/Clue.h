@@ -10,8 +10,8 @@
 class Clue: public Board {
 private:
 protected:
-  Lcd  *_lcd;
-  Ble  *_ble;
+  Lcd *_lcd;
+  Ble *_ble;
 
 public:
   Clue(void);

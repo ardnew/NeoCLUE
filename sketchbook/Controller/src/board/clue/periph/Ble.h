@@ -30,4 +30,7 @@ public:
   uint8_t parseScanResultLongName(uint8_t *buf, size_t len, ble_gap_evt_adv_report_t *report);
 };
 
+extern uint8_t const NEOCLUE_SERVICE_UUID128[16];
+extern uint8_t const NEOCLUE_SERVICE_STRIP_CHAR_UUID128[16];
+
 #endif // __BLE_H__

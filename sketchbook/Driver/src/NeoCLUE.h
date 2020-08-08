@@ -10,6 +10,7 @@
 #define __CPU_SLEEP_DELAY__             5 // milliseconds
 
 #define __SERIAL_DEBUG_BAUD_RATE__      115200
+#define __SERIAL_BOOT_TIMEOUT__         5000 // milliseconds to wait before proceding with bootup
 #define __PRINTF_DEBUG_MAX_LEN__        255 // undef to disable debug UART output
 
 #define __FILE_NONE__                   NULL
@@ -18,7 +19,7 @@
 
 #define __CPU_HALT_DELAY__              1000 // milliseconds
 #define _wait_forever \
-  nowhere: delay(__CPU_HALT_DELAY__); goto nowhere;
+  for(;;) { delay(__CPU_HALT_DELAY__); }
 
 #define __BLUETOOTH_NAME__              "NeoCLUE-Driver"
 
@@ -45,10 +46,10 @@ void print(info_level_t level, const char *filename, int lineno, const char *fun
 
 #if __PRINTF_DEBUG_MAX_LEN__
   #define __PRINTF_DEBUG__
-  #define _wait_for_serial(baud) \
-      Serial.begin(baud); while (!Serial) { delay(__CPU_SLEEP_DELAY__); }
+  #define _wait_for_serial(baud, timeout) \
+      for (Serial.begin(baud); !Serial && (millis() < (timeout)); delay(__CPU_SLEEP_DELAY__));
 #else
-  #define _wait_for_serial(baud) \
+  #define _wait_for_serial(baud, timeout) \
       /* debug code omitted */
 #endif
 

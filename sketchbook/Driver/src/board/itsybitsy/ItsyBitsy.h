@@ -4,16 +4,19 @@
 #include "../../NeoCLUE.h"
 #include "../Board.h"
 
+#include "periph/Led.h"
 #include "periph/Ble.h"
 
 class ItsyBitsy: public Board {
 private:
 protected:
-  Ble  *_ble;
+  Led *_led;
+  Ble *_ble;
 
 public:
   ItsyBitsy(void);
 
+  Led *led(void) { return _led; }
   Ble *ble(void) { return _ble; }
 
   Board::InitError begin(void);

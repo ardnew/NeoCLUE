@@ -2,7 +2,10 @@
 #include "Periph.h"
 #include "../Clue.h"
 
-void bluetoothScanStop(void) {
+uint8_t const NEOCLUE_SERVICE_UUID128[16]            = __NEOCLUE_SERVICE_UUID128__;
+uint8_t const NEOCLUE_SERVICE_STRIP_CHAR_UUID128[16] = __NEOCLUE_SERVICE_STRIP_CHAR_UUID128__;
+
+static void bluetoothScanStop(void) {
   if (nullptr != board) {
     Ble *ble = ((Clue *)board)->ble();
     if (nullptr != ble) {
@@ -11,7 +14,7 @@ void bluetoothScanStop(void) {
   }
 }
 
-void bluetoothScanResult(ble_gap_evt_adv_report_t *report) {
+static void bluetoothScanResult(ble_gap_evt_adv_report_t *report) {
   if (nullptr != board) {
     Ble *ble = ((Clue *)board)->ble();
     if (nullptr != ble) {
@@ -75,7 +78,7 @@ bool Ble::scanForDevices(bool scan) {
       _ble->Scanner.setStopCallback(bluetoothScanStop);
       _ble->Scanner.restartOnDisconnect(true);
       _ble->Scanner.filterRssi(__BLUETOOTH_RSSI_MIN__);
-      // _ble->Scanner.filterUuid(...); // only invoke callback if detect bleuart service
+      _ble->Scanner.filterUuid(NEOCLUE_SERVICE_UUID128);      // so only NeoCLUE devices are presented for connection
       _ble->Scanner.setInterval(160, 80); // in units of 0.625 ms
       _ble->Scanner.useActiveScan(true);  // Request scan response data
       if (!(_ble->Scanner.start(0))) {
@@ -121,10 +124,7 @@ uint8_t Ble::parseScanResultLongName(uint8_t *buf, size_t len, ble_gap_evt_adv_r
 
 void Ble::onScanResult(ble_gap_evt_adv_report_t *report) {
 
-  static const uint8_t NITELITE_SERVICE_UUID128[16] = {
-    0xCB, 0xCC, 0x4B, 0xD5, 0x7D, 0x43, 0x14, 0x9A,
-    0x53, 0x4E, 0x2F, 0x63, 0xC0, 0x00, 0x1D, 0x3F,
-  };
+  static const uint8_t NEOCLUE_SERVICE_UUID128[16] = __NEOCLUE_SERVICE_UUID128__;
 
   if (report->type.connectable) {
     _infof("-- scan result (%s) ----------------------",
@@ -148,8 +148,11 @@ void Ble::onScanResult(ble_gap_evt_adv_report_t *report) {
     if (parseScanResultLongName(name, 32, report)) {
       _infof("long name: %s", name);
     }
-    if (_ble->Scanner.checkReportForUuid(report, NITELITE_SERVICE_UUID128)) {
+    if (_ble->Scanner.checkReportForUuid(report, NEOCLUE_SERVICE_UUID128)) {
       _infof("%s", "found req'd UUID");
+      if (!_ble->Central.connected()) {
+        _ble->Central.connect(report);
+      }
     }
   }
   _ble->Scanner.resume();
