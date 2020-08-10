@@ -8,10 +8,8 @@
 #include <SPI.h>
 
 // Project
-#include "../../../NeoCLUE.h"
 #include "../../Board.h"
-
-#include "../../../view/View.h"
+#include "Periph.h"
 
 class Lcd {
 private:

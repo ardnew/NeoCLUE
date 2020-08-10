@@ -4,11 +4,11 @@
 #include "src/board/clue/Clue.h"
 #endif
 
+
+
 bool setupBoard(void) {
-  Board::InitError err = board->begin();
-  switch (err) {
+  switch (board->begin()) {
     case Board::InitError::None: {
-      _cstamp;
       return true;
     }
     case Board::InitError::LCD: {
@@ -19,25 +19,31 @@ bool setupBoard(void) {
       _cerrf("%s", "failed to initialize Bluetooth (LE) module");
       return false;
     }
+    case Board::InitError::SEN: {
+      _cerrf("%s", "failed to initialize I2C sensor suite");
+      return false;
+    }
     default: {
-      _cerrf("%s (%d)", "failed to initialize", err);
+      _cerrf("%s", "failed to initialize");
       return false;
     }
   }
 }
 
 void setup(void) {
-
   _wait_for_serial(__SERIAL_DEBUG_BAUD_RATE__, __SERIAL_BOOT_TIMEOUT__);
-
-  if (!setupBoard()) { _wait_forever; }
+  if (!setupBoard()) _halt;
 }
 
 void loop(void) {
-
   board->update();
-
   delay(__CPU_SLEEP_DELAY__);
+}
+
+namespace std {
+  void __throw_bad_function_call() {
+    _errf("%s", "panic"); _halt;
+  }
 }
 
 void print(info_level_t level, const char *filename, int lineno, const char *funcname, const char *fmt, ...) {

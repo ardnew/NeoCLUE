@@ -17,11 +17,11 @@
 #define __LINE_NONE__                   -1
 #define __FUNCTION_NONE__               NULL
 
-#define __CPU_HALT_DELAY__              1000 // milliseconds
-#define _wait_forever \
-  for(;;) { delay(__CPU_HALT_DELAY__); }
-
-#define __BLUETOOTH_NAME__              "NeoCLUE-Controller"
+#define __BLUETOOTH_NAME__              "NeoCLUE\0"
+#define __BLEUTOOTH_PEER_ADDR_SIZE__    6
+#define __BLUETOOTH_PEER_ADDR_STRLEN__                                         \
+  ( (2*(__BLEUTOOTH_PEER_ADDR_SIZE__)) +                                       \
+    ((__BLEUTOOTH_PEER_ADDR_SIZE__)-1) )
 
 // ----------------------------------------------------------------- TYPEDEFS --
 
@@ -41,6 +41,8 @@ typedef enum {
 void print(info_level_t level, const char *filename, int lineno, const char *funcname, const char *fmt, ...);
 
 // ------------------------------------------------------------------- MACROS --
+
+#define _halt { for(;;) { yield(); } }
 
 #define _sizeof_array(x) (sizeof(x) / sizeof(*(x)))
 

@@ -5,13 +5,13 @@
 #include <bluefruit.h>
 
 // Project
-#include "../../../NeoCLUE.h"
 #include "../../Board.h"
+#include "Periph.h"
 
 class Ble {
 private:
-  bool _isScanning;
-  bool _isScanningRestart;
+  uint16_t _connHandle;
+  bool _restartScan;
 
 protected:
   AdafruitBluefruit *_ble;
@@ -24,13 +24,10 @@ public:
 
   bool isScanning(void);
   bool scanForDevices(bool scan);
+  void onConnect(uint16_t connHandle);
+  void onDisconnect(uint16_t connHandle, uint8_t reason);
   void onScanStop(void);
   void onScanResult(ble_gap_evt_adv_report_t *report);
-  uint8_t parseScanResultShortName(uint8_t *buf, size_t len, ble_gap_evt_adv_report_t *report);
-  uint8_t parseScanResultLongName(uint8_t *buf, size_t len, ble_gap_evt_adv_report_t *report);
 };
-
-extern uint8_t const NEOCLUE_SERVICE_UUID128[16];
-extern uint8_t const NEOCLUE_SERVICE_STRIP_CHAR_UUID128[16];
 
 #endif // __BLE_H__

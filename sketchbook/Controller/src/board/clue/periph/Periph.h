@@ -16,20 +16,25 @@
 #define __PIN_BUTTON_LEFT__            PIN_BUTTON1       // 5
 #define __PIN_BUTTON_RIGHT__           PIN_BUTTON2       // 11
 
+#define __ADDR_I2C_ACCEL_GYRO__        0x6A
 #define __PIN_I2C_ACCEL_GYRO_SDA__     PIN_WIRE_SDA      // 20
 #define __PIN_I2C_ACCEL_GYRO_SCL__     PIN_WIRE_SCL      // 19
 
+#define __ADDR_I2C_MAGNETO__           0x1C
 #define __PIN_I2C_MAGNETO_SDA__        PIN_WIRE_SDA      // 20
 #define __PIN_I2C_MAGNETO_SCL__        PIN_WIRE_SCL      // 19
 
+#define __ADDR_I2C_LIGHT_PROXY__       0x39
 #define __PIN_I2C_LIGHT_PROXY_SDA__    PIN_WIRE_SDA      // 20
 #define __PIN_I2C_LIGHT_PROXY_SCL__    PIN_WIRE_SCL      // 19
 
-#define __PIN_I2C_HUMIDITY_SDA__       PIN_WIRE_SDA      // 20
-#define __PIN_I2C_HUMIDITY_SCL__       PIN_WIRE_SCL      // 19
+#define __ADDR_I2C_TEMP_HUMID__        0x44
+#define __PIN_I2C_TEMP_HUMID_SDA__     PIN_WIRE_SDA      // 20
+#define __PIN_I2C_TEMP_HUMID_SCL__     PIN_WIRE_SCL      // 19
 
-#define __PIN_I2C_TEMP_ATMO_SDA__      PIN_WIRE_SDA      // 20
-#define __PIN_I2C_TEMP_ATMO_SCL__      PIN_WIRE_SCL      // 19
+#define __ADDR_I2C_ATMOS__             0x77
+#define __PIN_I2C_ATMOS_SDA__          PIN_WIRE_SDA      // 20
+#define __PIN_I2C_ATMOS_SCL__          PIN_WIRE_SCL      // 19
 
 #define __PIN_PDM_MIC_DIN__            PIN_PDM_DIN       // 35
 #define __PIN_PDM_MIC_CLK__            PIN_PDM_CLK       // 36
@@ -79,18 +84,27 @@
 #define __BLUETOOTH_TX_POWER__         4
 #define __BLUETOOTH_CONN_MAX__         1
 #define __BLUETOOTH_LED_INTERVAL__     250
+#define __BLUETOOTH_SCAN_TIMEOUT__     0 // indefinite scan
 #define __BLUETOOTH_RSSI_MIN__         -80
+#define __BLUETOOTH_NAME_STRLEN_MAX__  32
+#define __BLUETOOTH_NO_CONN_HANDLE__   ~0U
 
 // convert 128-bit UUID to uint8_t[16] literal:
 //   $ perl -le 'print join ", ", map { "0x$_" } reverse((shift) =~ /([a-f0-9]{2})/ig)' 3f1d00c0-632f-4e53-9a14-437dd54bcccc
 //   0xcc, 0xcc, 0x4b, 0xd5, 0x7d, 0x43, 0x14, 0x9a, 0x53, 0x4e, 0x2f, 0x63, 0xc0, 0x00, 0x1d, 0x3f
 
+#define __UUID128_SIZE__ ( 128 / 8 )
+
 #define _neoclue_service_uuid128(id)                          \
-  { 0xCC, 0xCC, 0x4B, 0xD5, 0x7D, 0x43, 0x14, 0x9A, 0x53, 0x4E, 0x2F, 0x63, (id), 0x00, 0x1D, 0x3F }
+  { 0xCC, 0xCC, 0x4B, 0xD5, 0x7D, 0x43, 0x14, 0x9A,           \
+    0x53, 0x4E, 0x2F, 0x63, (id), 0x00, 0x1D, 0x3F }
 
 #define __NEOCLUE_SERVICE_UUID128__                           \
   _neoclue_service_uuid128(0xC0)  // 3f1d00c0-632f-4e53-9a14-437dd54bcccc
 #define __NEOCLUE_SERVICE_STRIP_CHAR_UUID128__                \
   _neoclue_service_uuid128(0xC1) // 3f1d00c1-632f-4e53-9a14-437dd54bcccc
+
+extern uint8_t const NEOCLUE_SERVICE_UUID128[__UUID128_SIZE__];
+extern uint8_t const NEOCLUE_SERVICE_STRIP_CHAR_UUID128[__UUID128_SIZE__];
 
 #endif // __PERIPH_H__

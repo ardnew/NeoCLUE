@@ -1,8 +1,4 @@
 #include "Lcd.h"
-#include "Periph.h"
-
-#include "../../../view/home/Home.h"
-#include "../../../view/scan/Scan.h"
 
 Lcd::Lcd(void):
   _view(nullptr),
@@ -13,7 +9,6 @@ Lcd::Lcd(void):
     __PIN_IPS_LCD_RST__
   )),
   _glue(new Adafruit_LvGL_Glue()) {
-  ; // empty
 }
 
 bool Lcd::begin(void) {
@@ -40,17 +35,20 @@ void Lcd::show(View::Kind kind) {
     }
     switch (kind) {
       case View::Kind::Home: {
-        _view = new Home();
+        _view = new Home(__IPS_LCD_WIDTH__, __IPS_LCD_HEIGHT__);
         break;
       }
       case View::Kind::Scan: {
-        _view = new Scan();
+        _view = new Scan(__IPS_LCD_WIDTH__, __IPS_LCD_HEIGHT__);
         break;
       }
       case View::Kind::None:
       default: {
         break;
       }
+    }
+    if (nullptr != _view) {
+      _view->show();
     }
   }
 }

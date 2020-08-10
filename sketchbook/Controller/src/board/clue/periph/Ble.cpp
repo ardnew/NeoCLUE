@@ -1,9 +1,28 @@
 #include "Ble.h"
-#include "Periph.h"
 #include "../Clue.h"
 
-uint8_t const NEOCLUE_SERVICE_UUID128[16]            = __NEOCLUE_SERVICE_UUID128__;
-uint8_t const NEOCLUE_SERVICE_STRIP_CHAR_UUID128[16] = __NEOCLUE_SERVICE_STRIP_CHAR_UUID128__;
+uint8_t const NEOCLUE_SERVICE_UUID128[__UUID128_SIZE__] =
+  __NEOCLUE_SERVICE_UUID128__;
+uint8_t const NEOCLUE_SERVICE_STRIP_CHAR_UUID128[__UUID128_SIZE__] =
+  __NEOCLUE_SERVICE_STRIP_CHAR_UUID128__;
+
+static void bluetoothConnect(uint16_t connHdl) {
+  if (nullptr != board) {
+    Ble *ble = ((Clue *)board)->ble();
+    if (nullptr != ble) {
+      ble->onConnect(connHdl);
+    }
+  }
+}
+
+static void bluetoothDisconnect(uint16_t connHdl, uint8_t reason) {
+  if (nullptr != board) {
+    Ble *ble = ((Clue *)board)->ble();
+    if (nullptr != ble) {
+      ble->onDisconnect(connHdl, reason);
+    }
+  }
+}
 
 static void bluetoothScanStop(void) {
   if (nullptr != board) {
@@ -24,10 +43,9 @@ static void bluetoothScanResult(ble_gap_evt_adv_report_t *report) {
 }
 
 Ble::Ble(void):
-  _isScanning(false),
-  _isScanningRestart(false),
+  _connHandle(__BLUETOOTH_NO_CONN_HANDLE__),
+  _restartScan(false),
   _ble(&Bluefruit) {
-  ; // empty
 }
 
 bool Ble::begin(void) {
@@ -50,11 +68,11 @@ void Ble::update(void) {
 }
 
 bool Ble::isScanning(void) {
-  return _isScanning;
+  return nullptr != _ble && _ble->Scanner.isRunning();
 }
 
 bool Ble::scanForDevices(bool scan) {
-  if (_isScanningRestart) {
+  if (_restartScan) {
     // scan restart in progress.
     // don't interrupt.
     // the scan will be started automatically when onScanStop get's fired.
@@ -62,33 +80,35 @@ bool Ble::scanForDevices(bool scan) {
   }
   if (scan) {
     // start scan requested.
-    if (_isScanning) {
+    if (isScanning()) {
       // scan already in progress.
       // flag for restart and cancel the current scan.
       // subsequent requests to start scan will now return false until the scan
       // has stopped and/or restarted.
-      _isScanningRestart = true;
+      _restartScan = true;
       if (!(_ble->Scanner.stop())) {
         return false;
       }
     } else {
       // no scan in progress.
       // register callbacks and start a new scan.
+      _ble->Central.setConnectCallback(bluetoothConnect);
+      _ble->Central.setDisconnectCallback(bluetoothDisconnect);
       _ble->Scanner.setRxCallback(bluetoothScanResult);
       _ble->Scanner.setStopCallback(bluetoothScanStop);
       _ble->Scanner.restartOnDisconnect(true);
       _ble->Scanner.filterRssi(__BLUETOOTH_RSSI_MIN__);
-      _ble->Scanner.filterUuid(NEOCLUE_SERVICE_UUID128);      // so only NeoCLUE devices are presented for connection
+      // we only want NeoCLUE devices to appear in scan results
+      _ble->Scanner.filterUuid(NEOCLUE_SERVICE_UUID128);
       _ble->Scanner.setInterval(160, 80); // in units of 0.625 ms
       _ble->Scanner.useActiveScan(true);  // Request scan response data
-      if (!(_ble->Scanner.start(0))) {
+      if (!(_ble->Scanner.start(__BLUETOOTH_SCAN_TIMEOUT__))) {
         return false; // failed to start.
       }
-      _isScanning = true;
     }
   } else {
     // stop scan requested.
-    if (_isScanning) {
+    if (isScanning()) {
       // scan in progress. send a stop request.
       if (!(_ble->Scanner.stop())) {
         return false;
@@ -98,62 +118,39 @@ bool Ble::scanForDevices(bool scan) {
   return true;
 }
 
+void Ble::onConnect(uint16_t connHandle) {
+  _connHandle = connHandle;
+  model->setIsConnected(true);
+}
+
+void Ble::onDisconnect(uint16_t connHandle, uint8_t reason) {
+  _connHandle = __BLUETOOTH_NO_CONN_HANDLE__;
+  model->setIsConnected(false);
+  model->setPeerAddr(nullptr);
+}
+
 void Ble::onScanStop(void) {
-  _isScanning = false;
-  if (_isScanningRestart) {
-    _isScanningRestart = false;
+  if (_restartScan) {
+    _restartScan = false;
     scanForDevices(true);
   }
 }
 
-uint8_t Ble::parseScanResultShortName(uint8_t *buf, size_t len, ble_gap_evt_adv_report_t *report) {
-  if (nullptr != buf && nullptr != report && nullptr != _ble) {
-    memset(buf, 0, len);
-    return _ble->Scanner.parseReportByType(report, BLE_GAP_AD_TYPE_SHORT_LOCAL_NAME, buf, len);
-  }
-  return 0;
-}
-
-uint8_t Ble::parseScanResultLongName(uint8_t *buf, size_t len, ble_gap_evt_adv_report_t *report) {
-  if (nullptr != buf && nullptr != report && nullptr != _ble) {
-    memset(buf, 0, len);
-    return _ble->Scanner.parseReportByType(report, BLE_GAP_AD_TYPE_COMPLETE_LOCAL_NAME, buf, len);
-  }
-  return 0;
-}
-
 void Ble::onScanResult(ble_gap_evt_adv_report_t *report) {
-
-  static const uint8_t NEOCLUE_SERVICE_UUID128[16] = __NEOCLUE_SERVICE_UUID128__;
-
+  bool isConnected = false;
   if (report->type.connectable) {
-    _infof("-- scan result (%s) ----------------------",
-      report->type.scan_response ? "reponse" : "advertisement"
-    );
-    char addr[18];
-    snprintf(addr, 18, "%02X-%02X-%02X-%02X-%02X-%02X",
-      report->peer_addr.addr[5],
-      report->peer_addr.addr[4],
-      report->peer_addr.addr[3],
-      report->peer_addr.addr[2],
-      report->peer_addr.addr[1],
-      report->peer_addr.addr[0]
-    );
-    _infof("addr: %s", addr);
-    _infof("rssi: %d dBm", report->rssi);
-    uint8_t name[32];
-    if (parseScanResultShortName(name, 32, report)) {
-      _infof("short name: %s", name);
-    }
-    if (parseScanResultLongName(name, 32, report)) {
-      _infof("long name: %s", name);
-    }
+    // verify the UUID again, which should always be true because of the call
+    // to filterUuid() in scanForDevices().
     if (_ble->Scanner.checkReportForUuid(report, NEOCLUE_SERVICE_UUID128)) {
-      _infof("%s", "found req'd UUID");
-      if (!_ble->Central.connected()) {
-        _ble->Central.connect(report);
+      // attempt connection
+      isConnected = _ble->Central.connect(report);
+      if (isConnected) {
+        // update _peerAddr to refer to our active connection.
+        model->setPeerAddr(report->peer_addr.addr);
       }
     }
   }
-  _ble->Scanner.resume();
+  if (!isConnected) {
+    _ble->Scanner.resume();
+  }
 }

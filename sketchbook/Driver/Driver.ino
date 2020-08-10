@@ -8,7 +8,6 @@ bool setupBoard(void) {
   Board::InitError err = board->begin();
   switch (err) {
     case Board::InitError::None: {
-      _cstamp;
       return true;
     }
     case Board::InitError::LED: {
