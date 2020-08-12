@@ -9,13 +9,21 @@ private:
 
   void initStatusBar(lv_obj_t *parent, int16_t width, int16_t height);
   void initTabView(lv_obj_t *parent, int16_t width, int16_t height);
-  void initAcc(lv_obj_t *parent, int16_t width, int16_t height);
+  void initTabColor(lv_obj_t *parent, int16_t width, int16_t height);
 
 protected:
   lv_obj_t *_screen;
   lv_obj_t *_btsymLabel;
   lv_obj_t *_peerLabel;
   lv_obj_t *_tabView;
+  lv_obj_t *_tabColor;
+  lv_obj_t *_colorPicker;
+  lv_obj_t *_colorRedLabel;
+  lv_obj_t *_colorGreenLabel;
+  lv_obj_t *_colorBlueLabel;
+  lv_obj_t *_colorXLabel;
+  lv_obj_t *_colorYLabel;
+  lv_obj_t *_colorZLabel;
 
 public:
   Home(void);
@@ -26,6 +34,9 @@ public:
 
   void onIsConnectedRelay(bool conn);
   void onPeerAddrRelay(uint8_t *addr);
+  void onAccelerationRelay(Accl accl);
+  void onAngularVelocityRelay(Gyro gyro);
+  void onMagneticFieldRelay(Mage mage);
 
   void update(void);
   void show(void);

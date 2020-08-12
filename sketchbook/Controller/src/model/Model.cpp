@@ -6,7 +6,13 @@ Model *model = new Model();
 Model::Model(void):
     _isConnected(false),
     _isConnectedRelay(new Relay<bool>()),
-    _peerAddrRelay(new Relay<uint8_t *>()) {
+    _peerAddrRelay(new Relay<uint8_t *>()),
+    _acceleration(),
+    _accelerationRelay(new Relay<Accl>()),
+    _angularVelocity(),
+    _angularVelocityRelay(new Relay<Gyro>()),
+    _magneticField(),
+    _magneticFieldRelay(new Relay<Mage>()) {
   setPeerAddr(nullptr);
 }
 
@@ -16,6 +22,15 @@ void Model::clearRelays(void) {
   }
   if (nullptr != _peerAddrRelay) {
     _peerAddrRelay->unsubscribeAll();
+  }
+  if (nullptr != _accelerationRelay) {
+    _accelerationRelay->unsubscribeAll();
+  }
+  if (nullptr != _angularVelocityRelay) {
+    _angularVelocityRelay->unsubscribeAll();
+  }
+  if (nullptr != _magneticFieldRelay) {
+    _magneticFieldRelay->unsubscribeAll();
   }
 }
 
@@ -40,4 +55,31 @@ void Model::setPeerAddr(const uint8_t addr[]) {
 
 uint8_t *Model::peerAddr(void) {
   return _isConnected ? _peerAddr : nullptr;
+}
+
+void Model::setAcceleration(const Accl accl) {
+  _acceleration = accl;
+  _accelerationRelay->send(acceleration());
+}
+
+Accl Model::acceleration(void) {
+  return _acceleration;
+}
+
+void Model::setAngularVelocity(const Gyro gyro) {
+  _angularVelocity = gyro;
+  _angularVelocityRelay->send(angularVelocity());
+}
+
+Gyro Model::angularVelocity(void) {
+  return _angularVelocity;
+}
+
+void Model::setMagneticField(const Mage mage) {
+  _magneticField = mage;
+  _magneticFieldRelay->send(magneticField());
+}
+
+Mage Model::magneticField(void) {
+  return _magneticField;
 }

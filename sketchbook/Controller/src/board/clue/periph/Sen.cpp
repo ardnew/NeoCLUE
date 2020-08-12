@@ -58,18 +58,18 @@ void Sen::update(void) {
   }
   if (canUpdateAccl) {
     _accl.update(evAccl);
-    _infof("accl: (x=%g, y=%g, z=%g)", _accl.x, _accl.y, _accl.z);
+    model->setAcceleration(acceleration());
   }
   if (canUpdateGyro) {
     _gyro.update(evGyro);
-    _infof("    gyro: (x=%g, y=%g, z=%g)", _gyro.x, _gyro.y, _gyro.z);
+    model->setAngularVelocity(angularVelocity());
   }
 
   sensors_event_t evMage;
   if (canUpdateMage) {
     _mag->getEvent(&evMage);
     _mage.update(evMage);
-    _infof("        mage: (x=%g, y=%g, z=%g)", _mage.x, _mage.y, _mage.z);
+    model->setMagneticField(magneticField());
   }
 }
 

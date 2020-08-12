@@ -80,4 +80,9 @@ void print(info_level_t level, const char *filename, int lineno, const char *fun
       (__LINE_NONE__     != (lineno))      &&             \
       (__FUNCTION_NONE__ != (funcname)) )
 
+#define _rgb565(r, g, b)                                                       \
+    ((((uint16_t)(r)) & 0x1F) << 11) |                                         \
+    ((((uint16_t)(g)) & 0x3F) <<  5) |                                         \
+    ((((uint16_t)(b)) & 0x1F) <<  0)
+
 #endif // __NEOCLUE_H__
