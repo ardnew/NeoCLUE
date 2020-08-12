@@ -2,9 +2,9 @@
 #include "../Clue.h"
 
 uint8_t const NEOCLUE_SERVICE_UUID128[__UUID128_SIZE__] =
-  __NEOCLUE_SERVICE_UUID128__;
+    __NEOCLUE_SERVICE_UUID128__;
 uint8_t const NEOCLUE_SERVICE_STRIP_CHAR_UUID128[__UUID128_SIZE__] =
-  __NEOCLUE_SERVICE_STRIP_CHAR_UUID128__;
+    __NEOCLUE_SERVICE_STRIP_CHAR_UUID128__;
 
 static void bluetoothConnect(uint16_t connHdl) {
   if (nullptr != board) {
@@ -43,9 +43,10 @@ static void bluetoothScanResult(ble_gap_evt_adv_report_t *report) {
 }
 
 Ble::Ble(void):
-  _connHandle(__BLUETOOTH_NO_CONN_HANDLE__),
-  _restartScan(false),
-  _ble(&Bluefruit) {
+    _connHandle(__BLUETOOTH_NO_CONN_HANDLE__),
+    _restartScan(false),
+    _ble(&Bluefruit) {
+  ; // empty
 }
 
 bool Ble::begin(void) {

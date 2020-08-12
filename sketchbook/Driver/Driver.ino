@@ -26,16 +26,12 @@ bool setupBoard(void) {
 }
 
 void setup(void) {
-
   _wait_for_serial(__SERIAL_DEBUG_BAUD_RATE__, __SERIAL_BOOT_TIMEOUT__);
-
-  if (!setupBoard()) { _wait_forever; }
+  if (!setupBoard()) _halt;
 }
 
 void loop(void) {
-
   board->update();
-
   delay(__CPU_SLEEP_DELAY__);
 }
 

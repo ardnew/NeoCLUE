@@ -3,6 +3,7 @@
 
 // Project
 #include "../NeoCLUE.h"
+#include "../util/Util.h"
 #include "../model/Model.h"
 #include "../view/View.h"
 #include "../view/home/Home.h"

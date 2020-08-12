@@ -3,9 +3,10 @@
 Board *board = new Clue();
 
 Clue::Clue(void):
-  _lcd(new Lcd()),
-  _ble(new Ble()),
-  _sen(new Sen()) {
+    _lcd(new Lcd()),
+    _ble(new Ble()),
+    _sen(new Sen()) {
+  ; // empty
 }
 
 Board::InitError Clue::begin(void) {
@@ -13,8 +14,8 @@ Board::InitError Clue::begin(void) {
     { return Board::InitError::LCD; }
   if ((nullptr == _ble) || !(_ble->begin()))
     { return Board::InitError::BLE; }
-  if ((nullptr == _sen) || !(_sen->begin()))
-    { return Board::InitError::SEN; }
+ if ((nullptr == _sen) || !(_sen->begin()))
+   { return Board::InitError::SEN; }
 
   _lcd->show(View::Kind::Home);
   _ble->scanForDevices(true);

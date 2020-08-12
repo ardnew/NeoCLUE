@@ -1,14 +1,15 @@
 #include "Lcd.h"
 
 Lcd::Lcd(void):
-  _view(nullptr),
-  _ips(new Adafruit_ST7789(
-    &__IPS_LCD_SPI__,
-    __PIN_IPS_LCD_CS__,
-    __PIN_IPS_LCD_DC__,
-    __PIN_IPS_LCD_RST__
-  )),
-  _glue(new Adafruit_LvGL_Glue()) {
+    _view(nullptr),
+    _ips(new Adafruit_ST7789(
+        __IPS_LCD_SPI__,
+        __PIN_IPS_LCD_CS__,
+        __PIN_IPS_LCD_DC__,
+        __PIN_IPS_LCD_RST__
+    )),
+    _glue(new Adafruit_LvGL_Glue()) {
+  ; // empty
 }
 
 bool Lcd::begin(void) {

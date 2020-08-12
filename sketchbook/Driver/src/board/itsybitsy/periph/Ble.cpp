@@ -58,7 +58,7 @@ bool Ble::begin(void) {
     { return false; }
 
   _stp->setProperties(
-    CHR_PROPS_READ | CHR_PROPS_WRITE | CHR_PROPS_WRITE_WO_RESP | CHR_PROPS_INDICATE
+      CHR_PROPS_READ | CHR_PROPS_WRITE | CHR_PROPS_WRITE_WO_RESP | CHR_PROPS_INDICATE
   );
   _stp->setPermission(SECMODE_OPEN, SECMODE_OPEN);
   // _stp->setFixedLen(RgbCharStripData::size());

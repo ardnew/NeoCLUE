@@ -4,8 +4,6 @@
 #include "src/board/clue/Clue.h"
 #endif
 
-
-
 bool setupBoard(void) {
   switch (board->begin()) {
     case Board::InitError::None: {

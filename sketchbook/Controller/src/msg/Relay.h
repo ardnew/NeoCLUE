@@ -25,20 +25,23 @@ public:
 
 template <typename T>
 Relay<T>::Relay(void):
-  _subscription(new LinkedList<std::function<void(T)>>()) {
+    _subscription(new LinkedList<std::function<void(T)>>()) {
   ; // empty
 }
 
 template <typename T>
 Relay<T>::~Relay(void) {
-  delete _subscription;
+  if (nullptr != _subscription) {
+    delete _subscription;
+  }
 }
 
 template <typename T>
 template <class C>
 bool Relay<T>::subscribe(C * const object, void(C::* const method)(T)) {
-  using namespace std::placeholders;
-  return subscribe(std::bind(method, object, _1));
+  using namespace std::placeholders; {
+    return subscribe(std::bind(method, object, _1));
+  }
 }
 
 template <typename T>

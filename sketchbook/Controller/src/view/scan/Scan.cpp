@@ -1,12 +1,12 @@
 #include "Scan.h"
 
 Scan::Scan(void):
-  _screen(lv_obj_create(NULL, NULL)) {
+    _screen(lv_obj_create(NULL, NULL)) {
   ; // empty
 }
 
 Scan::Scan(const uint16_t width, const uint16_t height):
-  Scan() {
+    Scan() {
 
   lv_obj_set_pos(_screen, 0, 0);
   lv_obj_set_size(_screen, width, height);

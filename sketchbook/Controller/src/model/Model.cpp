@@ -4,9 +4,9 @@
 Model *model = new Model();
 
 Model::Model(void):
-  _isConnected(false),
-  _isConnectedRelay(new Relay<bool>()),
-  _peerAddrRelay(new Relay<uint8_t *>()) {
+    _isConnected(false),
+    _isConnectedRelay(new Relay<bool>()),
+    _peerAddrRelay(new Relay<uint8_t *>()) {
   setPeerAddr(nullptr);
 }
 
