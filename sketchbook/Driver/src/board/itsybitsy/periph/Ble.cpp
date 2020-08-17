@@ -127,16 +127,15 @@ void Ble::onDisconnect(uint16_t connHdl, uint8_t reason) {
 }
 
 void Ble::onCharStripWrite(uint16_t connHdl, BLECharacteristic *chr, uint8_t *data, uint16_t len) {
-  _cinfof("received strip data (%d)", len);
-  for (int i = 0; i < len; ++i) {
-    _infof("  stp[%d] = %d", i, data[i]);
-  }
+//  _cinfof("received strip data (%d)", len);
+//  for (int i = 0; i < len; ++i) {
+//    _infof("  stp[%d] = %d", i, data[i]);
+//  }
 }
 
 void Ble::onCharFillWrite(uint16_t connHdl, BLECharacteristic *chr, uint8_t *data, uint16_t len) {
   _fil->set(data, len);
   if (_fil->isValid()) {
-    _cinfof("received fill data (%d, %d, %d)", _fil->argb(), _fil->start(), _fil->length());
     if (nullptr != board) {
       Pix *pix = ((ItsyBitsy *)board)->pix();
       if (nullptr != pix) {
