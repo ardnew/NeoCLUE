@@ -13,12 +13,20 @@ private:
   Accl _acceleration;
   Gyro _angularVelocity;
   Mage _magneticField;
+  Temp _temperature;
+  Humi _humidity;
+  Psur _pressure;
+  Alti _altitude;
 
   Relay<bool> *_isConnectedRelay;
   Relay<uint8_t *> *_peerAddrRelay;
   Relay<Accl> *_accelerationRelay;
   Relay<Gyro> *_angularVelocityRelay;
   Relay<Mage> *_magneticFieldRelay;
+  Relay<Temp> *_temperatureRelay;
+  Relay<Humi> *_humidityRelay;
+  Relay<Psur> *_pressureRelay;
+  Relay<Alti> *_altitudeRelay;
 
 protected:
 public:
@@ -34,6 +42,10 @@ public:
   Relay<Accl> *accelerationRelay(void) { return _accelerationRelay; }
   Relay<Gyro> *angularVelocityRelay(void) { return _angularVelocityRelay; }
   Relay<Mage> *magneticFieldRelay(void) { return _magneticFieldRelay; }
+  Relay<Temp> *temperatureRelay(void) { return _temperatureRelay; }
+  Relay<Humi> *humidityRelay(void) { return _humidityRelay; }
+  Relay<Psur> *pressureRelay(void) { return _pressureRelay; }
+  Relay<Alti> *altitudeRelay(void) { return _altitudeRelay; }
 
   void setIsConnected(bool conn);
   bool isConnected(void);
@@ -49,6 +61,18 @@ public:
 
   void setMagneticField(const Mage mage);
   Mage magneticField(void);
+
+  void setTemperature(const Temp temp);
+  Temp temperature(void);
+
+  void setHumidity(const Humi humi);
+  Humi humidity(void);
+
+  void setPressure(const Psur psur);
+  Psur pressure(void);
+
+  void setAltitude(const Alti alti);
+  Alti altitude(void);
 };
 
 extern Model *model;

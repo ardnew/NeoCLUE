@@ -51,6 +51,25 @@ void print(info_level_t level, const char *filename, int lineno, const char *fun
 
 #define _sizeof_array(x) (sizeof(x) / sizeof(*(x)))
 
+#define _min(a, b) ((a) < (b) ? (a) : (b))
+#define _max(a, b) ((a) < (b) ? (b) : (a))
+
+// _NOT_ an expression. like `_min`/`_max`, but ensure the operands are not
+// evaluated more than once. declares a new variable with given name `out`.
+#define _putmin(type, out, a, b)                                               \
+    type out; { type _a = (a), _b = (b); out = _min(_a, _b); }
+#define _putmax(type, out, a, b)                                               \
+    type out; { type _a = (a), _b = (b); out = _max(_a, _b); }
+
+#define _putmin3(type, out, a, b, c)                                           \
+    type out; { type _a = (a), _b = (b), _c = (c);                             \
+      out = _min(_a, _b); out = _min(out, _c); }
+#define _putmax3(type, out, a, b, c)                                           \
+    type out; { type _a = (a), _b = (b), _c = (c);                             \
+      out = _max(_a, _b); out = _max(out, _c); }
+
+#define _swap(type, a, b) { type c = (a); a = (b); b = (c); }
+
 #define _unused(x) ; ((void)(x)) ;
 
 // if C++17 is available, this should be replaced with std::invoke(). until

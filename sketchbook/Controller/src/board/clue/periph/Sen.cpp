@@ -5,6 +5,10 @@ Sen::Sen(void):
     _accl(__SENSORS_REFRESH_ACCEL__),
     _gyro(__SENSORS_REFRESH_GYRO__),
     _mage(__SENSORS_REFRESH_MAGNETO__),
+    _temp(__SENSORS_REFRESH_TEMPERATURE__),
+    _humi(__SENSORS_REFRESH_HUMIDITY__),
+    _psur(__SENSORS_REFRESH_PRESSURE__),
+    _alti(__SENSORS_REFRESH_ALTITUDE__),
     _lgp(new Adafruit_APDS9960()),
     _agc(new Adafruit_LSM6DS33()),
     _mag(new Adafruit_LIS3MDL()),
@@ -47,6 +51,19 @@ void Sen::update(void) {
   bool canUpdateAccl = _accl.canUpdate(now);
   bool canUpdateGyro = _gyro.canUpdate(now);
   bool canUpdateMage = _mage.canUpdate(now);
+  bool canUpdateTemp = _temp.canUpdate(now);
+  bool canUpdateHumi = _humi.canUpdate(now);
+  bool canUpdatePsur = _psur.canUpdate(now);
+  bool canUpdateAlti = _alti.canUpdate(now);
+
+  // _infof("%d %d %d %d %d %d %d",
+  //   canUpdateAccl,
+  //   canUpdateGyro,
+  //   canUpdateMage,
+  //   canUpdateTemp,
+  //   canUpdateHumi,
+  //   canUpdatePsur,
+  //   canUpdateAlti);
 
   sensors_event_t evAccl, evGyro;
   if (canUpdateAccl && canUpdateGyro) {
@@ -71,16 +88,28 @@ void Sen::update(void) {
     _mage.update(evMage);
     model->setMagneticField(magneticField());
   }
-}
 
-Accl Sen::acceleration(void) {
-  return _accl;
-}
+  if (canUpdateTemp) {
+    float temp = _thm->readTemperature();
+    _temp.update(temp);
+    model->setTemperature(temperature());
+  }
 
-Gyro Sen::angularVelocity(void) {
-  return _gyro;
-}
+  if (canUpdateHumi) {
+    float humi = 0;// _thm->readHumidity();
+    _humi.update(humi);
+    model->setHumidity(humidity());
+  }
 
-Mage Sen::magneticField(void) {
-  return _mage;
+  if (canUpdatePsur) {
+    float psur = _pal->readPressure();
+    _psur.update(psur);
+    model->setPressure(pressure());
+  }
+
+  if (canUpdateAlti) {
+    float alti = _pal->readAltitude();
+    _alti.update(alti);
+    model->setAltitude(altitude());
+  }
 }

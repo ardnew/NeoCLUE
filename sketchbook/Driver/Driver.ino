@@ -10,7 +10,7 @@ bool setupBoard(void) {
     case Board::InitError::None: {
       return true;
     }
-    case Board::InitError::LED: {
+    case Board::InitError::PIX: {
       _cerrf("%s", "failed to initialize LED strip interface");
       return false;
     }

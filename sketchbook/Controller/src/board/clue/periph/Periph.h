@@ -98,12 +98,14 @@
 
 #define __NEOCLUE_SERVICE_UUID128__            _neoclue_service_uuid128(0xC0) // 3f1d00c0-632f-4e53-9a14-437dd54bcccc
 #define __NEOCLUE_SERVICE_STRIP_CHAR_UUID128__ _neoclue_service_uuid128(0xC1) // 3f1d00c1-632f-4e53-9a14-437dd54bcccc
+#define __NEOCLUE_SERVICE_FILL_CHAR_UUID128__  _neoclue_service_uuid128(0xC2) // 3f1d00c2-632f-4e53-9a14-437dd54bcccc
 
 //                                           128-bit / 8-bit == 16 bytes
 #define __UUID128_SIZE__                       ( 128 / 8 )
 
-extern uint8_t const NEOCLUE_SERVICE_UUID128[__UUID128_SIZE__];
-extern uint8_t const NEOCLUE_SERVICE_STRIP_CHAR_UUID128[__UUID128_SIZE__];
+extern const uint8_t NEOCLUE_SERVICE_UUID128[__UUID128_SIZE__];
+extern const uint8_t NEOCLUE_SERVICE_STRIP_CHAR_UUID128[__UUID128_SIZE__];
+extern const uint8_t NEOCLUE_SERVICE_FILL_CHAR_UUID128[__UUID128_SIZE__];
 
 //
 // =============================================================================
@@ -122,12 +124,15 @@ extern uint8_t const NEOCLUE_SERVICE_STRIP_CHAR_UUID128[__UUID128_SIZE__];
 // time (milliseconds) to wait between successive sensor readings
 #define __SENSORS_REFRESH_ACCEL__              100
 #define __SENSORS_REFRESH_GYRO__               100
-#define __SENSORS_REFRESH_MAGNETO__            500
-#define __SENSORS_REFRESH_COLOR__              1000
-#define __SENSORS_REFRESH_GESTURE__            1000
-#define __SENSORS_REFRESH_PROXIMITY__          1000
-#define __SENSORS_REFRESH_TEMPERATURE__        1000
-#define __SENSORS_REFRESH_HUMIDITY__           1000
-#define __SENSORS_REFRESH_ATMOS__              1000
+#define __SENSORS_REFRESH_MAGNETO__            100
+#define __SENSORS_REFRESH_COLOR__              100
+#define __SENSORS_REFRESH_GESTURE__            100
+#define __SENSORS_REFRESH_PROXIMITY__          100
+#define __SENSORS_REFRESH_TEMPERATURE__        200
+#define __SENSORS_REFRESH_HUMIDITY__           100
+#define __SENSORS_REFRESH_PRESSURE__           100
+#define __SENSORS_REFRESH_ALTITUDE__           100
+
+#define __SENSORS_ACCEL_GRAVITY__              9.80665F
 
 #endif // __PERIPH_H__

@@ -1,22 +1,21 @@
 #ifndef __ITSYBITSY_H__
 #define __ITSYBITSY_H__
 
-#include "../../NeoCLUE.h"
 #include "../Board.h"
 
-#include "periph/Led.h"
+#include "periph/Pix.h"
 #include "periph/Ble.h"
 
 class ItsyBitsy: public Board {
 private:
 protected:
-  Led *_led;
+  Pix *_pix;
   Ble *_ble;
 
 public:
   ItsyBitsy(void);
 
-  Led *led(void) { return _led; }
+  Pix *pix(void) { return _pix; }
   Ble *ble(void) { return _ble; }
 
   Board::InitError begin(void);

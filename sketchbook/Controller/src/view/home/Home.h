@@ -37,9 +37,16 @@ public:
   void onAccelerationRelay(Accl accl);
   void onAngularVelocityRelay(Gyro gyro);
   void onMagneticFieldRelay(Mage mage);
+  void onTemperatureRelay(Temp temp);
+  void onHumidityRelay(Humi humi);
+  void onPressureRelay(Psur psur);
+  void onAltitudeRelay(Alti alti);
 
   void update(void);
   void show(void);
+
+  lv_obj_t *colorPicker(void);
+  void onColorPickerEvent(lv_obj_t *obj, lv_event_t event);
 };
 
 #endif // __HOME_H__

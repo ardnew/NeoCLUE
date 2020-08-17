@@ -14,7 +14,10 @@ private:
   bool _restartScan;
 
 protected:
-  AdafruitBluefruit *_ble;
+  AdafruitBluefruit       *_ble;
+  BLEClientService        *_neo;
+  BLEClientCharacteristic *_stp;
+  BLEClientCharacteristic *_fil;
 
 public:
   Ble(void);

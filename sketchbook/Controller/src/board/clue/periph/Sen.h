@@ -18,6 +18,10 @@ private:
   Accl _accl;
   Gyro _gyro;
   Mage _mage;
+  Temp _temp;
+  Humi _humi;
+  Psur _psur;
+  Alti _alti;
 
 protected:
   Adafruit_APDS9960 *_lgp; // light/gesture/proximity
@@ -32,9 +36,13 @@ public:
   bool begin(void);
   void update(void);
 
-  Accl acceleration(void);
-  Gyro angularVelocity(void);
-  Mage magneticField(void);
+  Accl acceleration(void)    { return _accl; }
+  Gyro angularVelocity(void) { return _gyro; }
+  Mage magneticField(void)   { return _mage; }
+  Temp temperature(void)     { return _temp; }
+  Humi humidity(void)        { return _humi; }
+  Psur pressure(void)        { return _psur; }
+  Alti altitude(void)        { return _alti; }
 };
 
 #endif // __SEN_H__

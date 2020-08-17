@@ -1,9 +1,12 @@
 #include "Ble.h"
-#include "Periph.h"
 #include "../ItsyBitsy.h"
 
-uint8_t const NEOCLUE_SERVICE_UUID128[16]            = __NEOCLUE_SERVICE_UUID128__;
-uint8_t const NEOCLUE_SERVICE_STRIP_CHAR_UUID128[16] = __NEOCLUE_SERVICE_STRIP_CHAR_UUID128__;
+const uint8_t NEOCLUE_SERVICE_UUID128[__UUID128_SIZE__] =
+    __NEOCLUE_SERVICE_UUID128__;
+const uint8_t NEOCLUE_SERVICE_STRIP_CHAR_UUID128[__UUID128_SIZE__] =
+    __NEOCLUE_SERVICE_STRIP_CHAR_UUID128__;
+const uint8_t NEOCLUE_SERVICE_FILL_CHAR_UUID128[__UUID128_SIZE__] =
+    __NEOCLUE_SERVICE_FILL_CHAR_UUID128__;
 
 static void bluetoothConnect(uint16_t connHdl) {
   if (nullptr != board) {
@@ -23,12 +26,31 @@ static void bluetoothDisconnect(uint16_t connHdl, uint8_t reason) {
   }
 }
 
+static void bluetoothCharStripWrite(uint16_t connHdl, BLECharacteristic *chr, uint8_t *data, uint16_t len) {
+  if (nullptr != board) {
+    Ble *ble = ((ItsyBitsy *)board)->ble();
+    if (nullptr != ble) {
+      ble->onCharStripWrite(connHdl, chr, data, len);
+    }
+  }
+}
+
+static void bluetoothCharFillWrite(uint16_t connHdl, BLECharacteristic *chr, uint8_t *data, uint16_t len) {
+  if (nullptr != board) {
+    Ble *ble = ((ItsyBitsy *)board)->ble();
+    if (nullptr != ble) {
+      ble->onCharFillWrite(connHdl, chr, data, len);
+    }
+  }
+}
+
 Ble::Ble(void):
   _numConnections(0),
   _ble(&Bluefruit),
   _dis(new BLEDis()),
   _neo(new BLEService(NEOCLUE_SERVICE_UUID128)),
-  _stp(new BLECharacteristic(NEOCLUE_SERVICE_STRIP_CHAR_UUID128)) {
+  _stp(new Strip(NEOCLUE_SERVICE_STRIP_CHAR_UUID128)),
+  _fil(new Fill(NEOCLUE_SERVICE_FILL_CHAR_UUID128)) {
   ; // empty
 }
 
@@ -51,20 +73,19 @@ bool Ble::begin(void) {
 
   _dis->setManufacturer(__BLUETOOTH_DEVICE_MFG__);
   _dis->setModel(__BLUETOOTH_DEVICE_MODEL__);
-  if (ERROR_NONE != _dis->begin())
-    { return false; }
+  if (ERROR_NONE != _dis->begin()) {
+    return false;
+  }
 
-  if (ERROR_NONE != _neo->begin())
-    { return false; }
-
-  _stp->setProperties(
-      CHR_PROPS_READ | CHR_PROPS_WRITE | CHR_PROPS_WRITE_WO_RESP | CHR_PROPS_INDICATE
-  );
-  _stp->setPermission(SECMODE_OPEN, SECMODE_OPEN);
-  // _stp->setFixedLen(RgbCharStripData::size());
-  // _stp->setWriteCallback(bluetoothRgbCharStripWrite);
-  if (ERROR_NONE != _stp->begin())
-    { return false; }
+  if (ERROR_NONE != _neo->begin()) {
+    return false;
+  }
+  if (!_stp->begin(bluetoothCharStripWrite)) {
+    return false;
+  }
+  if (!_fil->begin(bluetoothCharFillWrite)) {
+    return false;
+  }
 
   if (!_ble->Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE)) {
     return false;
@@ -100,4 +121,12 @@ void Ble::onConnect(uint16_t connHdl) {
 
 void Ble::onDisconnect(uint16_t connHdl, uint8_t reason) {
   --_numConnections;
+}
+
+void Ble::onCharStripWrite(uint16_t connHdl, BLECharacteristic *chr, uint8_t *data, uint16_t len) {
+
+}
+
+void Ble::onCharFillWrite(uint16_t connHdl, BLECharacteristic *chr, uint8_t *data, uint16_t len) {
+  _cinfof("%s", data);
 }

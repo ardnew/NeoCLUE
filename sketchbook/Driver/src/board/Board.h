@@ -1,6 +1,9 @@
 #ifndef __BOARD_H__
 #define __BOARD_H__
 
+// Project
+#include "../NeoCLUE.h"
+
 class Board {
 private:
 protected:
@@ -9,7 +12,7 @@ protected:
   }
 
 public:
-  enum class InitError { None, LED, BLE };
+  enum class InitError { None, PIX, BLE };
 
   virtual InitError begin(void) = 0;
   virtual void update(void) = 0;

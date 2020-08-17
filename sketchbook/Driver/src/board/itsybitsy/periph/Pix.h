@@ -1,23 +1,23 @@
-#ifndef __LED_H__
-#define __LED_H__
+#ifndef __PIX_H__
+#define __PIX_H__
 
 // RGB LED Strip
 #include <Adafruit_NeoPixel.h>
 
 // Project
-#include "../../../NeoCLUE.h"
 #include "../../Board.h"
+#include "Periph.h"
 
-class Led {
+class Pix {
 private:
 protected:
-  Adafruit_NeoPixel *_led;
+  Adafruit_NeoPixel *_pix;
 
 public:
-  Led(void);
+  Pix(void);
 
   bool begin(void);
   void update(void);
 };
 
-#endif // __LED_H__
+#endif // __PIX_H__

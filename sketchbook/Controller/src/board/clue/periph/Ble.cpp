@@ -1,10 +1,12 @@
 #include "Ble.h"
 #include "../Clue.h"
 
-uint8_t const NEOCLUE_SERVICE_UUID128[__UUID128_SIZE__] =
+const uint8_t NEOCLUE_SERVICE_UUID128[__UUID128_SIZE__] =
     __NEOCLUE_SERVICE_UUID128__;
-uint8_t const NEOCLUE_SERVICE_STRIP_CHAR_UUID128[__UUID128_SIZE__] =
+const uint8_t NEOCLUE_SERVICE_STRIP_CHAR_UUID128[__UUID128_SIZE__] =
     __NEOCLUE_SERVICE_STRIP_CHAR_UUID128__;
+const uint8_t NEOCLUE_SERVICE_FILL_CHAR_UUID128[__UUID128_SIZE__] =
+    __NEOCLUE_SERVICE_FILL_CHAR_UUID128__;
 
 static void bluetoothConnect(uint16_t connHdl) {
   if (nullptr != board) {
@@ -45,7 +47,10 @@ static void bluetoothScanResult(ble_gap_evt_adv_report_t *report) {
 Ble::Ble(void):
     _connHandle(__BLUETOOTH_NO_CONN_HANDLE__),
     _restartScan(false),
-    _ble(&Bluefruit) {
+    _ble(&Bluefruit),
+    _neo(new BLEClientService(NEOCLUE_SERVICE_UUID128)),
+    _stp(new BLEClientCharacteristic(NEOCLUE_SERVICE_STRIP_CHAR_UUID128)),
+    _fil(new BLEClientCharacteristic(NEOCLUE_SERVICE_FILL_CHAR_UUID128)) {
   ; // empty
 }
 
@@ -61,11 +66,20 @@ bool Ble::begin(void) {
   }
   _ble->setName(__BLUETOOTH_NAME__);
   _ble->setConnLedInterval(__BLUETOOTH_LED_INTERVAL__);
+
+  if (!_neo->begin()) {
+    return false;
+  }
+  _stp->begin();
+  _fil->begin();
+
   return true;
 }
 
 void Ble::update(void) {
-  ; // empty
+  if (model->isConnected()) {
+    _fil->write("hello\0", 6);
+  }
 }
 
 bool Ble::isScanning(void) {
@@ -121,7 +135,19 @@ bool Ble::scanForDevices(bool scan) {
 
 void Ble::onConnect(uint16_t connHandle) {
   _connHandle = connHandle;
-  model->setIsConnected(true);
+  if (_neo->discover(connHandle)) {
+    if (_stp->discover() && _fil->discover()) {
+      model->setIsConnected(true);
+    } else {
+      _cinfof("couldn't find characteristics: %s", "strip/fill");
+      // _ble->Central.disconnect(connHandle);
+      scanForDevices(true);
+    }
+  } else {
+    _cinfof("couldn't find service: %s", "NeoCLUE");
+    // _ble->Central.disconnect(connHandle);
+    scanForDevices(true);
+  }
 }
 
 void Ble::onDisconnect(uint16_t connHandle, uint8_t reason) {

@@ -1,4 +1,18 @@
 #include "Lcd.h"
+#include "../Clue.h"
+
+static void colorPickerEvent(lv_obj_t *obj, lv_event_t event) {
+  _cinfof("%s", "color picker event");
+  if (nullptr != board) {
+    Lcd *lcd = ((Clue *)board)->lcd();
+    if (nullptr != lcd) {
+      View *view = lcd->view();
+      if ((nullptr != view) && (View::Kind::Home == view->kind())) {
+        ((Home *)view)->onColorPickerEvent(obj, event);
+      }
+    }
+  }
+}
 
 Lcd::Lcd(void):
     _view(nullptr),
@@ -37,6 +51,8 @@ void Lcd::show(View::Kind kind) {
     switch (kind) {
       case View::Kind::Home: {
         _view = new Home(__IPS_LCD_WIDTH__, __IPS_LCD_HEIGHT__);
+        _cinfof("color picker = %p", ((Home *)_view)->colorPicker());
+        lv_obj_set_event_cb(((Home *)_view)->colorPicker(), colorPickerEvent);
         break;
       }
       case View::Kind::Scan: {

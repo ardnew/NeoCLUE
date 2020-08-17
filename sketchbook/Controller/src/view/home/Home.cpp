@@ -1,4 +1,5 @@
 #include "Home.h"
+#include "../../util/Util.h"
 
 #define __BLUETOOTH_PEER_NOT_CONNECTED_STR__  "Scanning...\0"
 
@@ -33,6 +34,10 @@ Home::Home(const uint16_t width, const uint16_t height):
   model->accelerationRelay()->subscribe(this, &Home::onAccelerationRelay);
   model->angularVelocityRelay()->subscribe(this, &Home::onAngularVelocityRelay);
   model->magneticFieldRelay()->subscribe(this, &Home::onMagneticFieldRelay);
+  model->temperatureRelay()->subscribe(this, &Home::onTemperatureRelay);
+  model->humidityRelay()->subscribe(this, &Home::onHumidityRelay);
+  model->pressureRelay()->subscribe(this, &Home::onPressureRelay);
+  model->altitudeRelay()->subscribe(this, &Home::onAltitudeRelay);
 }
 
 Home::~Home(void) {
@@ -167,9 +172,16 @@ void Home::onPeerAddrRelay(uint8_t *addr) {
 }
 
 void Home::onAccelerationRelay(Accl accl) {
-  int32_t r = lroundf((accl.x + 9.80665) * 10.0);
-  int32_t g = lroundf((accl.y + 9.80665) * 10.0);
-  int32_t b = lroundf((accl.z + 9.80665) * 10.0);
+  int32_t r = lroundf(accl.x * 100.0F);
+  int32_t g = lroundf(accl.y * 100.0F);
+  int32_t b = lroundf(accl.z * 100.0F);
+
+  _putmin3(int32_t, cmin, r, g, b);
+  _putmax3(int32_t, cmax, r, g, b);
+
+  r = interp(r, cmin, cmax, 0x00, 0xFF);
+  g = interp(g, cmin, cmax, 0x00, 0xFF);
+  b = interp(b, cmin, cmax, 0x00, 0xFF);
 
   if      (r < 0x00) { r = 0x00; }
   else if (r > 0xFF) { r = 0xFF; }
@@ -189,6 +201,7 @@ void Home::onAccelerationRelay(Accl accl) {
   lv_cpicker_set_color(
       _colorPicker, lv_color_make((uint8_t)r, (uint8_t)g, (uint8_t)b)
   );
+  lv_obj_invalidate(_colorPicker);
 }
 
 void Home::onAngularVelocityRelay(Gyro gyro) {
@@ -199,6 +212,22 @@ void Home::onMagneticFieldRelay(Mage mage) {
 
 }
 
+void Home::onTemperatureRelay(Temp temp) {
+  // _infof("temperature = %.2f °F", temp.fahrenheit);
+}
+
+void Home::onHumidityRelay(Humi humi) {
+  //_infof("humidity = %.2f %%", humi.percent);
+}
+
+void Home::onPressureRelay(Psur psur) {
+  //_infof("pressure = %.2f Pas", psur.pascal);
+}
+
+void Home::onAltitudeRelay(Alti alti) {
+  //_infof("altitude = %.2f m", alti.meters);
+}
+
 void Home::update(void) {
   ; // empty
 }
@@ -206,5 +235,18 @@ void Home::update(void) {
 void Home::show(void) {
   if (nullptr != _screen) {
     lv_scr_load(_screen);
+  }
+}
+
+lv_obj_t *Home::colorPicker(void) {
+  return _colorPicker;
+}
+
+void Home::onColorPickerEvent(lv_obj_t *obj, lv_event_t event) {
+  switch (event) {
+    case LV_EVENT_VALUE_CHANGED:
+      _cinfof("invalidating: %p (_colorPicker = %p)", obj, _colorPicker);
+      lv_obj_invalidate(obj);
+      break;
   }
 }

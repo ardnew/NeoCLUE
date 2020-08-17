@@ -26,6 +26,7 @@ public:
   void update(void);
 
   void show(View::Kind kind);
+  View *view(void) { return _view; }
 };
 
 #endif // __LCD_H__

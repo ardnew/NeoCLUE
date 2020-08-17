@@ -12,7 +12,15 @@ Model::Model(void):
     _angularVelocity(),
     _angularVelocityRelay(new Relay<Gyro>()),
     _magneticField(),
-    _magneticFieldRelay(new Relay<Mage>()) {
+    _magneticFieldRelay(new Relay<Mage>()),
+    _temperature(),
+    _temperatureRelay(new Relay<Temp>()),
+    _humidity(),
+    _humidityRelay(new Relay<Humi>()),
+    _pressure(),
+    _pressureRelay(new Relay<Psur>()),
+    _altitude(),
+    _altitudeRelay(new Relay<Alti>()) {
   setPeerAddr(nullptr);
 }
 
@@ -31,6 +39,18 @@ void Model::clearRelays(void) {
   }
   if (nullptr != _magneticFieldRelay) {
     _magneticFieldRelay->unsubscribeAll();
+  }
+  if (nullptr != _temperatureRelay) {
+    _temperatureRelay->unsubscribeAll();
+  }
+  if (nullptr != _humidityRelay) {
+    _humidityRelay->unsubscribeAll();
+  }
+  if (nullptr != _pressureRelay) {
+    _pressureRelay->unsubscribeAll();
+  }
+  if (nullptr != _altitudeRelay) {
+    _altitudeRelay->unsubscribeAll();
   }
 }
 
@@ -82,4 +102,40 @@ void Model::setMagneticField(const Mage mage) {
 
 Mage Model::magneticField(void) {
   return _magneticField;
+}
+
+void Model::setTemperature(const Temp temp) {
+  _temperature = temp;
+  _temperatureRelay->send(temperature());
+}
+
+Temp Model::temperature(void) {
+  return _temperature;
+}
+
+void Model::setHumidity(const Humi humi) {
+  _humidity = humi;
+  _humidityRelay->send(humidity());
+}
+
+Humi Model::humidity(void) {
+  return _humidity;
+}
+
+void Model::setPressure(const Psur psur) {
+  _pressure = psur;
+  _pressureRelay->send(pressure());
+}
+
+Psur Model::pressure(void) {
+  return _pressure;
+}
+
+void Model::setAltitude(const Alti alti) {
+  _altitude = alti;
+  _altitudeRelay->send(altitude());
+}
+
+Alti Model::altitude(void) {
+  return _altitude;
 }
