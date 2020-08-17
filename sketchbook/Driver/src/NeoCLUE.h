@@ -11,7 +11,7 @@
 
 #define __SERIAL_DEBUG_BAUD_RATE__      115200
 #define __SERIAL_BOOT_TIMEOUT__         5000 // milliseconds to wait before proceding with bootup
-//#define __PRINTF_DEBUG_MAX_LEN__        255 // undef to disable debug UART output
+#define __PRINTF_DEBUG_MAX_LEN__        255 // undef to disable debug UART output
 
 #define __FLOAT32_ABSTOL__              5.0e-6  // 32-bit
 #define __FLOAT64_ABSTOL__              5.0e-14 // 64-bit

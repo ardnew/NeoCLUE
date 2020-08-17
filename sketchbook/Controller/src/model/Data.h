@@ -3,6 +3,9 @@
 
 #include "Adafruit_Sensor.h"
 
+// Project
+#include "../util/Util.h"
+
 class Xyz {
 protected:
   timespan_t _updateRate; // milliseconds
@@ -52,6 +55,29 @@ public:
     { /* empty */ }
   inline void update(const sensors_event_t &ev)
     { Xyz::update(ev.acceleration); }
+  inline uint32_t toArgb(void) {
+    int32_t a = 0xFF;
+    int32_t r = lroundf(Xyz::x * 100.0F);
+    int32_t g = lroundf(Xyz::y * 100.0F);
+    int32_t b = lroundf(Xyz::z * 100.0F);
+
+    _putmin3(int32_t, cmin, r, g, b);
+    _putmax3(int32_t, cmax, r, g, b);
+
+    r = interp(r, cmin, cmax, 0x00, 0xFF);
+    g = interp(g, cmin, cmax, 0x00, 0xFF);
+    b = interp(b, cmin, cmax, 0x00, 0xFF);
+
+    if      (r < 0x00) { r = 0x00; }
+    else if (r > 0xFF) { r = 0xFF; }
+    if      (g < 0x00) { g = 0x00; }
+    else if (g > 0xFF) { g = 0xFF; }
+    if      (b < 0x00) { b = 0x00; }
+    else if (b > 0xFF) { b = 0xFF; }
+
+    return ((uint32_t)a << 24U) | ((uint32_t)r << 16U) | \
+           ((uint32_t)g <<  8U) | ((uint32_t)b <<  0U);
+  }
 };
 
 class Gyro: public Xyz {

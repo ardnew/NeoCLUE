@@ -21,6 +21,7 @@ public:
   virtual void update(void) = 0;
 
   virtual void set(const uint8_t *data, const uint16_t len) = 0;
+  virtual void write(void) = 0;
 
   virtual bool isValid(void) = 0;
   virtual uint8_t *data(void) = 0;

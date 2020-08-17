@@ -18,7 +18,9 @@ Board::InitError Clue::begin(void) {
    { return Board::InitError::SEN; }
 
   _lcd->show(View::Kind::Home);
+
   _ble->scanForDevices(true);
+  _ble->subscribeToSensors();
 
   return InitError::None;
 }

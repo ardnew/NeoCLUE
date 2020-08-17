@@ -28,6 +28,7 @@ public:
 
   void set(const uint8_t *data, const uint16_t len);
   void set(const uint16_t numPixels, const uint16_t colorOrder, const uint16_t pixelType);
+  void write(void);
 
   bool isValid(void) { return _isValid; }
   uint8_t *data(void) { return _data; }

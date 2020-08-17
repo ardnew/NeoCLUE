@@ -7,6 +7,9 @@ Model::Model(void):
     _isConnected(false),
     _isConnectedRelay(new Relay<bool>()),
     _peerAddrRelay(new Relay<uint8_t *>()),
+    _numPixels(0),
+    _colorOrder(0),
+    _pixelType(0),
     _acceleration(),
     _accelerationRelay(new Relay<Accl>()),
     _angularVelocity(),
@@ -75,6 +78,30 @@ void Model::setPeerAddr(const uint8_t addr[]) {
 
 uint8_t *Model::peerAddr(void) {
   return _isConnected ? _peerAddr : nullptr;
+}
+
+void Model::setNumPixels(const uint16_t numPixels) {
+  _numPixels = numPixels;
+}
+
+uint16_t Model::numPixels(void) {
+  return _numPixels;
+}
+
+void Model::setColorOrder(const uint16_t colorOrder) {
+  _colorOrder = colorOrder;
+}
+
+uint16_t Model::colorOrder(void) {
+  return _colorOrder;
+}
+
+void Model::setPixelType(const uint16_t pixelType) {
+  _pixelType = pixelType;
+}
+
+uint16_t Model::pixelType(void) {
+  return _pixelType;
 }
 
 void Model::setAcceleration(const Accl accl) {

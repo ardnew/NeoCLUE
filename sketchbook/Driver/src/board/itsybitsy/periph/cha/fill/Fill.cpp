@@ -48,3 +48,9 @@ void Fill::set(const uint16_t start, const uint16_t length, const uint32_t argb)
     _data[7] = (uint8_t)((_argb >>  0U) & 0xFF);
   }
 }
+
+void Fill::write(void) {
+  if (_isValid) {
+    BLECharacteristic::write(_data, size());
+  }
+}

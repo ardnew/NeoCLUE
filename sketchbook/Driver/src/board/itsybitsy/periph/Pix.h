@@ -18,6 +18,8 @@ public:
 
   bool begin(void);
   void update(void);
+
+  void fill(const uint32_t color = 0, const uint16_t start = 0, const uint16_t length = 0);
 };
 
 #endif // __PIX_H__

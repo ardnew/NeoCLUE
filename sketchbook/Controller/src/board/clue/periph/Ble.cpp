@@ -77,9 +77,7 @@ bool Ble::begin(void) {
 }
 
 void Ble::update(void) {
-  if (model->isConnected()) {
-    _fil->write("hello\0", 6);
-  }
+  ; // empty
 }
 
 bool Ble::isScanning(void) {
@@ -138,15 +136,16 @@ void Ble::onConnect(uint16_t connHandle) {
   if (_neo->discover(connHandle)) {
     if (_stp->discover() && _fil->discover()) {
       model->setIsConnected(true);
-    } else {
-      _cinfof("couldn't find characteristics: %s", "strip/fill");
-      // _ble->Central.disconnect(connHandle);
-      scanForDevices(true);
+      uint8_t stripData[6];
+      if (_stp->read(stripData, sizeof(stripData)) >= sizeof(stripData)) {
+        model->setNumPixels(((uint16_t)stripData[0] << 8U) | (uint16_t)stripData[1]);
+        model->setColorOrder(((uint16_t)stripData[2] << 8U) | (uint16_t)stripData[3]);
+        model->setPixelType(((uint16_t)stripData[4] << 8U) | (uint16_t)stripData[5]);
+      }
     }
-  } else {
-    _cinfof("couldn't find service: %s", "NeoCLUE");
-    // _ble->Central.disconnect(connHandle);
-    scanForDevices(true);
+  }
+  if (!(model->isConnected())) {
+    _ble->disconnect(connHandle);
   }
 }
 
@@ -180,4 +179,56 @@ void Ble::onScanResult(ble_gap_evt_adv_report_t *report) {
   if (!isConnected) {
     _ble->Scanner.resume();
   }
+}
+
+void Ble::subscribeToSensors(void) {
+  model->accelerationRelay()->subscribe(this, &Ble::onAccelerationRelay);
+  model->angularVelocityRelay()->subscribe(this, &Ble::onAngularVelocityRelay);
+  model->magneticFieldRelay()->subscribe(this, &Ble::onMagneticFieldRelay);
+  model->temperatureRelay()->subscribe(this, &Ble::onTemperatureRelay);
+  model->humidityRelay()->subscribe(this, &Ble::onHumidityRelay);
+  model->pressureRelay()->subscribe(this, &Ble::onPressureRelay);
+  model->altitudeRelay()->subscribe(this, &Ble::onAltitudeRelay);
+}
+
+void Ble::onAccelerationRelay(Accl accl) {
+  uint16_t start = 0;
+  uint16_t numPixels = model->numPixels();
+  uint32_t argb = accl.toArgb();
+  if (model->isConnected() && (numPixels > 0)) {
+    uint8_t fillData[8];
+    fillData[0] = (uint8_t)((start  >> 8U) & 0xFF);
+    fillData[1] = (uint8_t)((start  >> 0U) & 0xFF);
+    fillData[2] = (uint8_t)((numPixels >> 8U) & 0xFF);
+    fillData[3] = (uint8_t)((numPixels >> 0U) & 0xFF);
+    fillData[4] = (uint8_t)((argb >> 24U) & 0xFF);
+    fillData[5] = (uint8_t)((argb >> 16U) & 0xFF);
+    fillData[6] = (uint8_t)((argb >>  8U) & 0xFF);
+    fillData[7] = (uint8_t)((argb >>  0U) & 0xFF);
+    _fil->write(fillData, sizeof(fillData));
+  }
+}
+
+void Ble::onAngularVelocityRelay(Gyro gyro) {
+
+}
+
+void Ble::onMagneticFieldRelay(Mage mage) {
+
+}
+
+void Ble::onTemperatureRelay(Temp temp) {
+
+}
+
+void Ble::onHumidityRelay(Humi humi) {
+
+}
+
+void Ble::onPressureRelay(Psur psur) {
+
+}
+
+void Ble::onAltitudeRelay(Alti alti) {
+
 }

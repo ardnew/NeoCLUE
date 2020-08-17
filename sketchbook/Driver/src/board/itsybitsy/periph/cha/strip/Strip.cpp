@@ -46,3 +46,8 @@ void Strip::set(const uint16_t numPixels, const uint16_t colorOrder, const uint1
   }
 }
 
+void Strip::write(void) {
+  if (_isValid) {
+    BLECharacteristic::write(_data, size());
+  }
+}

@@ -172,23 +172,12 @@ void Home::onPeerAddrRelay(uint8_t *addr) {
 }
 
 void Home::onAccelerationRelay(Accl accl) {
-  int32_t r = lroundf(accl.x * 100.0F);
-  int32_t g = lroundf(accl.y * 100.0F);
-  int32_t b = lroundf(accl.z * 100.0F);
+  uint32_t color = accl.toArgb();
 
-  _putmin3(int32_t, cmin, r, g, b);
-  _putmax3(int32_t, cmax, r, g, b);
-
-  r = interp(r, cmin, cmax, 0x00, 0xFF);
-  g = interp(g, cmin, cmax, 0x00, 0xFF);
-  b = interp(b, cmin, cmax, 0x00, 0xFF);
-
-  if      (r < 0x00) { r = 0x00; }
-  else if (r > 0xFF) { r = 0xFF; }
-  if      (g < 0x00) { g = 0x00; }
-  else if (g > 0xFF) { g = 0xFF; }
-  if      (b < 0x00) { b = 0x00; }
-  else if (b > 0xFF) { b = 0xFF; }
+  uint8_t a = (color >> 24) & 0xFF;
+  uint8_t r = (color >> 16) & 0xFF;
+  uint8_t g = (color >>  8) & 0xFF;
+  uint8_t b = (color >>  0) & 0xFF;
 
   lv_label_set_text_fmt(_colorRedLabel,   "R: %d", r);
   lv_label_set_text_fmt(_colorGreenLabel, "G: %d", g);
@@ -198,9 +187,7 @@ void Home::onAccelerationRelay(Accl accl) {
   lv_label_set_text_fmt(_colorYLabel, "Y: %.3f", accl.y);
   lv_label_set_text_fmt(_colorZLabel, "Z: %.3f", accl.z);
 
-  lv_cpicker_set_color(
-      _colorPicker, lv_color_make((uint8_t)r, (uint8_t)g, (uint8_t)b)
-  );
+  lv_cpicker_set_color(_colorPicker, lv_color_make(r, g, b));
   lv_obj_invalidate(_colorPicker);
 }
 

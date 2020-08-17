@@ -10,6 +10,9 @@ class Model {
 private:
   bool _isConnected;
   uint8_t _peerAddr[__BLEUTOOTH_PEER_ADDR_SIZE__];
+  uint16_t _numPixels;
+  uint16_t _colorOrder;
+  uint16_t _pixelType;
   Accl _acceleration;
   Gyro _angularVelocity;
   Mage _magneticField;
@@ -52,6 +55,13 @@ public:
 
   void setPeerAddr(const uint8_t addr[]);
   uint8_t *peerAddr(void);
+
+  void setNumPixels(const uint16_t numPixels);
+  uint16_t numPixels(void);
+  void setColorOrder(const uint16_t colorOrder);
+  uint16_t colorOrder(void);
+  void setPixelType(const uint16_t pixelType);
+  uint16_t pixelType(void);
 
   void setAcceleration(const Accl accl);
   Accl acceleration(void);

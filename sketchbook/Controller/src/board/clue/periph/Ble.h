@@ -31,6 +31,15 @@ public:
   void onDisconnect(uint16_t connHandle, uint8_t reason);
   void onScanStop(void);
   void onScanResult(ble_gap_evt_adv_report_t *report);
+
+  void subscribeToSensors(void);
+  void onAccelerationRelay(Accl accl);
+  void onAngularVelocityRelay(Gyro gyro);
+  void onMagneticFieldRelay(Mage mage);
+  void onTemperatureRelay(Temp temp);
+  void onHumidityRelay(Humi humi);
+  void onPressureRelay(Psur psur);
+  void onAltitudeRelay(Alti alti);
 };
 
 #endif // __BLE_H__

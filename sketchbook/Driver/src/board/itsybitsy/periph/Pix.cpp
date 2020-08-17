@@ -16,7 +16,6 @@ bool Pix::begin(void) {
 
   _pix->begin();
   _pix->setBrightness(0x7F);
-  _pix->fill(0x0000FF00);
   _pix->show();
 
   return true;
@@ -24,4 +23,9 @@ bool Pix::begin(void) {
 
 void Pix::update(void) {
   ; // empty
+}
+
+void Pix::fill(const uint32_t color, const uint16_t start, const uint16_t length) {
+  _pix->fill(color, start, length);
+  _pix->show();
 }

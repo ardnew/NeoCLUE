@@ -83,6 +83,9 @@ bool Ble::begin(void) {
   if (!_stp->begin(bluetoothCharStripWrite)) {
     return false;
   }
+  _stp->set(__NEOPIXEL_LENGTH_PX__, __NEOPIXEL_ORDER__, __NEOPIXEL_TYPE__);
+  _stp->write();
+
   if (!_fil->begin(bluetoothCharFillWrite)) {
     return false;
   }
@@ -124,9 +127,21 @@ void Ble::onDisconnect(uint16_t connHdl, uint8_t reason) {
 }
 
 void Ble::onCharStripWrite(uint16_t connHdl, BLECharacteristic *chr, uint8_t *data, uint16_t len) {
-
+  _cinfof("received strip data (%d)", len);
+  for (int i = 0; i < len; ++i) {
+    _infof("  stp[%d] = %d", i, data[i]);
+  }
 }
 
 void Ble::onCharFillWrite(uint16_t connHdl, BLECharacteristic *chr, uint8_t *data, uint16_t len) {
-  _cinfof("%s", data);
+  _fil->set(data, len);
+  if (_fil->isValid()) {
+    _cinfof("received fill data (%d, %d, %d)", _fil->argb(), _fil->start(), _fil->length());
+    if (nullptr != board) {
+      Pix *pix = ((ItsyBitsy *)board)->pix();
+      if (nullptr != pix) {
+        pix->fill(_fil->argb(), _fil->start(), _fil->length());
+      }
+    }
+  }
 }

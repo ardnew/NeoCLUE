@@ -51,7 +51,6 @@ void Lcd::show(View::Kind kind) {
     switch (kind) {
       case View::Kind::Home: {
         _view = new Home(__IPS_LCD_WIDTH__, __IPS_LCD_HEIGHT__);
-        _cinfof("color picker = %p", ((Home *)_view)->colorPicker());
         lv_obj_set_event_cb(((Home *)_view)->colorPicker(), colorPickerEvent);
         break;
       }
