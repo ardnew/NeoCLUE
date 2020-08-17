@@ -1,5 +1,5 @@
 # NeoCLUE 
-### Motion-reactive wireless LED strip controller using Adafruit CLUE/ItsyBitsy (nRF52840)
+### Sensor-reactive wireless LED strip controller using Adafruit CLUE/ItsyBitsy (nRF52840)
 
 ## Contents
 Two separate Arduino sketches are included in this project's [sketchbook](sketchbook):
